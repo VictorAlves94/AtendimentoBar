@@ -15,8 +15,9 @@ public record FuncionarioListarDto(Long id,
                                    String email,
                                    String senha,
                                    Funcao funcao,
-                                   LocalDate dataCriacao)
-
+                                   LocalDate dataAdmissao,
+                                   LocalDate dataDemissao,
+                                   Boolean ativo)
 {
 
 

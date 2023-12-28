@@ -4,7 +4,6 @@ import com.BarApi.Dev.domain.Funcionario;
 import com.BarApi.Dev.domain.dto.FuncionarioCadastrarDto;
 import com.BarApi.Dev.domain.dto.FuncionarioListarDto;
 import com.BarApi.Dev.domain.repository.FuncionarioRepository;
-import com.fasterxml.jackson.databind.BeanProperty;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,9 +11,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FuncionarioServices {
@@ -22,10 +21,8 @@ public class FuncionarioServices {
     FuncionarioRepository repository;
 
     public FuncionarioListarDto buscarUsuario(Long id) {
-        Optional<Funcionario> usuarioOptional = repository.findById(id);
+        Funcionario usuario = buscarPorId(id);
 
-        if (usuarioOptional.isPresent()) {
-            Funcionario usuario = usuarioOptional.get();
             FuncionarioListarDto dados = new FuncionarioListarDto(
                     usuario.getId(),
                     usuario.getNome(),
@@ -35,12 +32,12 @@ public class FuncionarioServices {
                     usuario.getEmail(),
                     usuario.getSenha(),
                     usuario.getFuncao(),
-                    usuario.getDataCriacao()
+                    usuario.getDataAdmissao(),
+                    usuario.getDataDemissao(),
+                    usuario.getAtivo()
             );
             return dados;
-        } else {
-            return null;
-        }
+
     }
 
     public Page<FuncionarioListarDto> listarTodos(Pageable paginacao) {
@@ -59,7 +56,9 @@ public class FuncionarioServices {
                     usuario.getEmail(),
                     usuario.getSenha(),
                     usuario.getFuncao(),
-                    usuario.getDataCriacao());
+                    usuario.getDataAdmissao(),
+                    usuario.getDataDemissao(),
+                    usuario.getAtivo());
 
             dadosList.add(dados);
         });
@@ -74,12 +73,11 @@ public class FuncionarioServices {
     }
 
     public Object atualizarUsuario(FuncionarioCadastrarDto funcionarioDto, long id) {
-        Optional<Funcionario> usuarioOptional = repository.findById(id);
+        Funcionario usuario = buscarPorId(id);
 
         var usuarioEntrada = converterDtoEntidade(funcionarioDto);
             usuarioEntrada.setId(id);
-        if (usuarioOptional.isPresent()) {
-            var usuario = usuarioOptional.get();
+
 
             BeanUtils.copyProperties(usuarioEntrada, usuario);
             var usuarioAtualizado = repository.save(usuario);
@@ -88,8 +86,25 @@ public class FuncionarioServices {
         }
 
 
-        return null;
+
+    public void demitirFuncionario(Long id) {
+        var funcionario = buscarPorId(id);
+
+        if (funcionario.getAtivo().booleanValue() == false) {
+            // Pode lançar uma exceção, retornar um erro ou fazer algo apropriado ao seu aplicativo
+            throw new RuntimeException("Funcionário já inativo.");
+        } else {
+
+            // Realiza a exclusão lógica
+            funcionario.setAtivo(false);
+            funcionario.setDataDemissao(LocalDate.now());
+
+            // Salva as alterações no banco de dados
+            repository.save(funcionario);
+        }
     }
+
+
 
 
     private Funcionario converterDtoEntidade(FuncionarioCadastrarDto funcionarioDto) {
@@ -106,5 +121,12 @@ public class FuncionarioServices {
         return funcionario;
     }
 
+
+    private Funcionario buscarPorId(Long id){
+        Funcionario usuarioOptional = repository.findById(id).orElseThrow(()-> new RuntimeException("Usuario não Encontrado"));
+
+
+        return usuarioOptional;
+    }
 }
 

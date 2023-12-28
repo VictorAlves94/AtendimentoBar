@@ -36,7 +36,7 @@ public class FuncionarioController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrarFuncionario(@RequestBody FuncionarioCadastrarDto dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity cadastrar(@RequestBody FuncionarioCadastrarDto dados, UriComponentsBuilder uriBuilder) {
         var usuarioCadastrado = service.cadastrarFuncionario(dados);
 
         UriComponents uriComponents = uriBuilder.path("/funcionarios/{id}").buildAndExpand(usuarioCadastrado.getId());
@@ -47,11 +47,16 @@ public class FuncionarioController {
     }
 
     @PutMapping("/{id}")
-
-    public ResponseEntity atualizarFuncionario(@RequestBody FuncionarioCadastrarDto dados, @PathVariable("id") Long id) {
+    public ResponseEntity atualizar(@RequestBody FuncionarioCadastrarDto dados, @PathVariable("id") Long id) {
         var usuarioAtt = service.atualizarUsuario(dados, id);
 
 
         return ResponseEntity.ok(usuarioAtt);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity desligar(@PathVariable("id") Long id){
+        service.demitirFuncionario(id);
+        return ResponseEntity.ok().build();
     }
 }
