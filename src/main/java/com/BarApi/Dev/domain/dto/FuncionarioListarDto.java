@@ -2,6 +2,8 @@ package com.BarApi.Dev.domain.dto;
 
 import com.BarApi.Dev.domain.Funcionario;
 import com.BarApi.Dev.domain.enuns.Funcao;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -19,20 +21,5 @@ public record FuncionarioListarDto(Long id,
 
 
 
-        public FuncionarioListarDto(Funcionario funcionario) {
-
-
-            this(
-                    funcionario.getId(),
-                    funcionario.getNome(),
-                    funcionario.getSobrenome(),
-                    funcionario.getCpf(),
-                    funcionario.getTelefone(),
-                    funcionario.getEmail(),
-                    funcionario.getSenha(),
-                    funcionario.getFuncao(),
-                    funcionario.getDataCriacao()
-            );
-    }
 }
 

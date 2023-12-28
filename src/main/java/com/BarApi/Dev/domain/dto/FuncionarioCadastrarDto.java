@@ -2,7 +2,6 @@ package com.BarApi.Dev.domain.dto;
 
 import com.BarApi.Dev.domain.enuns.Funcao;
 
-import java.util.Set;
 
 public record FuncionarioCadastrarDto(
 
@@ -14,4 +13,5 @@ public record FuncionarioCadastrarDto(
         String senha,
         Funcao funcao
         ){
+
 }

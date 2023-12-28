@@ -1,39 +1,57 @@
 package com.BarApi.Dev.controllers;
 
-import com.BarApi.Dev.domain.Funcionario;
 import com.BarApi.Dev.domain.dto.FuncionarioCadastrarDto;
 import com.BarApi.Dev.domain.dto.FuncionarioListarDto;
 import com.BarApi.Dev.services.FuncionarioServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.net.URI;
 
 @RestController
-@RequestMapping(value ="/funcionarios")
+@RequestMapping(value = "/funcionarios")
 public class FuncionarioController {
-@Autowired
+    @Autowired
     FuncionarioServices service;
 
-    @PostMapping
-    @Transactional
+    @GetMapping("/{id}")
+    public ResponseEntity buscarPorId(@PathVariable Long id) {
+        var usuario = service.buscarUsuario(id);
+        return ResponseEntity.ok(usuario);
 
-    public ResponseEntity cadastrarFuncionario (@RequestBody FuncionarioCadastrarDto dados, UriComponentsBuilder uriBuilder){
-       service.cadastrarFuncionario(dados);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<FuncionarioListarDto>> findAll(){
-        List<Funcionario> list = service.findAll();
-        List<FuncionarioListarDto> listDTO = list.stream().map(obj -> new FuncionarioListarDto(obj)).collect(Collectors.toList());
-        return ResponseEntity.ok().body(listDTO);
+    public ResponseEntity<Page<FuncionarioListarDto>> listar(@PageableDefault(size = 10, sort = {"id"}) Pageable paginacao) {
+        var page = service.listarTodos(paginacao);
+        return ResponseEntity.ok(page);
+    }
 
+    @PostMapping
+    @Transactional
+    public ResponseEntity cadastrarFuncionario(@RequestBody FuncionarioCadastrarDto dados, UriComponentsBuilder uriBuilder) {
+        var usuarioCadastrado = service.cadastrarFuncionario(dados);
+
+        UriComponents uriComponents = uriBuilder.path("/funcionarios/{id}").buildAndExpand(usuarioCadastrado.getId());
+        URI uri = uriComponents.toUri();
+
+
+        return ResponseEntity.created(uri).body(usuarioCadastrado);
+    }
+
+    @PutMapping("/{id}")
+
+    public ResponseEntity atualizarFuncionario(@RequestBody FuncionarioCadastrarDto dados, @PathVariable("id") Long id) {
+        var usuarioAtt = service.atualizarUsuario(dados, id);
+
+
+        return ResponseEntity.ok(usuarioAtt);
     }
 }

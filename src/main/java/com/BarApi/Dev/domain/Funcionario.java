@@ -14,20 +14,20 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Funcionario {
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long id;
-private String nome;
-private String sobrenome;
-private String cpf;
-private String telefone;
-@Column(unique = true)
-private String email;
-private String senha;
-@Embedded
-Funcao funcao;
-@JsonFormat(pattern = "dd/MM/yyyy")
-private LocalDate dataCriacao = LocalDate.now();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nome;
+    private String sobrenome;
+    private String cpf;
+    private String telefone;
+    @Column(unique = true)
+    private String email;
+    private String senha;
+    @Embedded
+    Funcao funcao;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate dataCriacao = LocalDate.now();
 
 
     public Funcionario(Long id, String nome, String sobrenome, String cpf, String telefone, String email, String senha, Funcao funcao) {
