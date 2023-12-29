@@ -1,7 +1,7 @@
 package com.BarApi.Dev.controllers;
 
-import com.BarApi.Dev.domain.dto.FuncionarioCadastrarDto;
-import com.BarApi.Dev.domain.dto.FuncionarioListarDto;
+import com.BarApi.Dev.dto.funcionario.FuncionarioCadastrarDto;
+import com.BarApi.Dev.dto.funcionario.FuncionarioListarDto;
 import com.BarApi.Dev.services.FuncionarioServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

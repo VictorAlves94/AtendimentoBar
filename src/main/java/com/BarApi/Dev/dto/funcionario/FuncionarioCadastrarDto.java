@@ -1,6 +1,6 @@
-package com.BarApi.Dev.domain.dto;
+package com.BarApi.Dev.dto.funcionario;
 
-import com.BarApi.Dev.domain.enuns.Funcao;
+import com.BarApi.Dev.enuns.Funcao;
 
 
 public record FuncionarioCadastrarDto(

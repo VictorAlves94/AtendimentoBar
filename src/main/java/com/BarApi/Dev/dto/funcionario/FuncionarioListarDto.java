@@ -1,9 +1,6 @@
-package com.BarApi.Dev.domain.dto;
+package com.BarApi.Dev.dto.funcionario;
 
-import com.BarApi.Dev.domain.Funcionario;
-import com.BarApi.Dev.domain.enuns.Funcao;
-import lombok.Getter;
-import lombok.Setter;
+import com.BarApi.Dev.enuns.Funcao;
 
 import java.time.LocalDate;
 

@@ -1,6 +1,6 @@
 package com.BarApi.Dev.domain;
 
-import com.BarApi.Dev.domain.enuns.Funcao;
+import com.BarApi.Dev.enuns.Funcao;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,8 +24,7 @@ public class Funcionario {
     @Column(unique = true)
     private String email;
     private String senha;
-    @Embedded
-    Funcao funcao;
+    private Funcao funcao;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataAdmissao = LocalDate.now();
     @JsonFormat(pattern = "dd/MM/yyyy")

@@ -1,4 +1,4 @@
-package com.BarApi.Dev.domain.repository;
+package com.BarApi.Dev.repository;
 
 import com.BarApi.Dev.domain.Funcionario;
 import org.springframework.data.jpa.repository.JpaRepository;

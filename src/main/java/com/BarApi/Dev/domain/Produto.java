@@ -1,9 +1,8 @@
 package com.BarApi.Dev.domain;
 
-import com.BarApi.Dev.domain.enuns.Categoria;
+import com.BarApi.Dev.enuns.CategoriaEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.stereotype.Repository;
 
 @Entity
 @Getter
@@ -18,8 +17,7 @@ private Long id;
 private String nome;
 private String descricao;
 private Float valor;
-@Embedded
-private Categoria categoria;
-private int quantEstoque;
+private CategoriaEnum categoriaEnum;
+private Integer quantEstoque = 0;
 
 }
