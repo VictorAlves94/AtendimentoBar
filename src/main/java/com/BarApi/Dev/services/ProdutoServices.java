@@ -1,6 +1,7 @@
 package com.BarApi.Dev.services;
 
 import com.BarApi.Dev.domain.Produto;
+import com.BarApi.Dev.dto.produto.ProdutoCriarDto;
 import com.BarApi.Dev.dto.produto.ProdutoListarDto;
 import com.BarApi.Dev.repository.ProdutoRepository;
 import org.springframework.beans.BeanUtils;
@@ -55,16 +56,16 @@ public class ProdutoServices {
         return new PageImpl<>(dadosList, pagina.getPageable(), pagina.getTotalElements());
     }
 
-    public Produto cadastrarProdutos(ProdutoListarDto dados) {
+    public Produto cadastrarProdutos(ProdutoCriarDto dados) {
         Produto produtoCadastro = converterDtoEntidade(dados);
         var produtoSalvo = repository.save(produtoCadastro);
         return produtoSalvo;
     }
 
-    public Object atualizarUsuario(ProdutoListarDto produtoListarDto, long id) {
+    public Object atualizarUsuario(ProdutoCriarDto produtoCriarDto, long id) {
         Produto produto = buscarPorId(id);
 
-        var produtoEntrada = converterDtoEntidade(produtoListarDto);
+        var produtoEntrada = converterDtoEntidade(produtoCriarDto);
             produtoEntrada.setId(id);
 
 
@@ -83,14 +84,14 @@ public class ProdutoServices {
         throw new RuntimeException("Este Produto Não Existe.");
     }
 
-    private Produto converterDtoEntidade(ProdutoListarDto produtoListarDto) {
+    private Produto converterDtoEntidade(ProdutoCriarDto produtoCriarDto) {
         Produto produto = new Produto();
 
-        produto.setNome(produtoListarDto.nome());
-        produto.setDescricao(produtoListarDto.descricao());
-        produto.setValor(produtoListarDto.valor());
-        produto.setCategoriaEnum(produtoListarDto.categoriaEnum());
-        produto.setQuantEstoque(produtoListarDto.quantEstoque());
+        produto.setNome(produtoCriarDto.nome());
+        produto.setDescricao(produtoCriarDto.descricao());
+        produto.setValor(produtoCriarDto.valor());
+        produto.setCategoriaEnum(produtoCriarDto.categoriaEnum());
+        produto.setQuantEstoque(produtoCriarDto.quantEstoque());
 
 
         return produto;

@@ -1,5 +1,6 @@
 package com.BarApi.Dev.controllers;
 
+import com.BarApi.Dev.dto.produto.ProdutoCriarDto;
 import com.BarApi.Dev.dto.produto.ProdutoListarDto;
 import com.BarApi.Dev.services.ProdutoServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ProdutoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody ProdutoListarDto dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity cadastrar(@RequestBody ProdutoCriarDto dados, UriComponentsBuilder uriBuilder) {
         var produtoCadastrado = service.cadastrarProdutos(dados);
 
         UriComponents uriComponents = uriBuilder.path("/produtos/{id}").buildAndExpand(produtoCadastrado.getId());
@@ -46,7 +47,7 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity atualizar(@RequestBody ProdutoListarDto dados, @PathVariable("id") Long id) {
+    public ResponseEntity atualizar(@RequestBody ProdutoCriarDto dados, @PathVariable("id") Long id) {
         var produtoAtt = service.atualizarUsuario(dados, id);
 
 
