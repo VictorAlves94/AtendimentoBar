@@ -35,7 +35,6 @@ public class FuncionarioController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity cadastrar(@RequestBody FuncionarioCadastrarDto dados, UriComponentsBuilder uriBuilder) {
         var usuarioCadastrado = service.cadastrarFuncionario(dados);
 

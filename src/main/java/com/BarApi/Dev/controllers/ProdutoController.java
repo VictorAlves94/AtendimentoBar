@@ -35,7 +35,6 @@ public class ProdutoController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity cadastrar(@RequestBody ProdutoCriarDto dados, UriComponentsBuilder uriBuilder) {
         var produtoCadastrado = service.cadastrarProdutos(dados);
 

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +57,14 @@ public class ProdutoServices {
         return new PageImpl<>(dadosList, pagina.getPageable(), pagina.getTotalElements());
     }
 
+    @Transactional
     public Produto cadastrarProdutos(ProdutoCriarDto dados) {
         Produto produtoCadastro = converterDtoEntidade(dados);
         var produtoSalvo = repository.save(produtoCadastro);
         return produtoSalvo;
     }
 
+    @Transactional
     public Object atualizarUsuario(ProdutoCriarDto produtoCriarDto, long id) {
         Produto produto = buscarPorId(id);
 

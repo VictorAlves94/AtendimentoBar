@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -66,12 +67,14 @@ public class FuncionarioServices {
         return new PageImpl<>(dadosList, pagina.getPageable(), pagina.getTotalElements());
     }
 
+    @Transactional
     public Funcionario cadastrarFuncionario(FuncionarioCadastrarDto dados) {
         Funcionario funcionarioCadastro = converterDtoEntidade(dados);
         var abc = repository.save(funcionarioCadastro);
         return abc;
     }
 
+    @Transactional
     public Object atualizarUsuario(FuncionarioCadastrarDto funcionarioDto, long id) {
         Funcionario usuario = buscarPorId(id);
 
