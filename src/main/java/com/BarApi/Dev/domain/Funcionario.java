@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,6 +32,8 @@ public class Funcionario {
     private LocalDate dataDemissao;
 
     private Boolean ativo= true;
+    @OneToMany(mappedBy = "garcon")
+    private List<Pedidos> pedidos;
 
 
 }

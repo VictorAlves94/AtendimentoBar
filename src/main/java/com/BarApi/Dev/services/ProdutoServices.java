@@ -4,6 +4,7 @@ import com.BarApi.Dev.domain.Produto;
 import com.BarApi.Dev.dto.produto.ProdutoCriarDto;
 import com.BarApi.Dev.dto.produto.ProdutoListarDto;
 import com.BarApi.Dev.repository.ProdutoRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -47,7 +48,7 @@ public class ProdutoServices {
         produtoEntrada.setId(id);
 
         // Aqui você poderia usar um método específico para cópia ou um mapeador como ModelMapper ou MapStruct
-        // BeanUtils.copyProperties(produtoEntrada, produto);
+       BeanUtils.copyProperties(produtoEntrada, produto);
 
         return repository.save(produto);
     }

@@ -48,10 +48,7 @@ public class FuncionarioServices {
         Funcionario usuario = buscarPorId(id);
         Funcionario usuarioEntrada = converterDtoParaEntidade(funcionarioDto);
         usuarioEntrada.setId(id);
-
-        // Aqui você poderia usar um método específico para cópia ou um mapeador como ModelMapper ou MapStruct
-        // BeanUtils.copyProperties(usuarioEntrada, usuario);
-
+        BeanUtils.copyProperties(usuarioEntrada, usuario);
         return repository.save(usuario);
     }
 
@@ -101,6 +98,9 @@ public class FuncionarioServices {
     }
 
     private Funcionario buscarPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Usuario não Encontrado"));
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Funcionario não Encontrado"));
+    }
+    public Funcionario buscarPorNome(String nome){
+        return repository.findByNome(nome).orElseThrow(()-> new RuntimeException("Funcionario não encontrado"));
     }
 }

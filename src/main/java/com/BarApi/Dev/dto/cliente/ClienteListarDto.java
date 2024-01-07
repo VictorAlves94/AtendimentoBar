@@ -5,16 +5,17 @@ import com.BarApi.Dev.enuns.Funcao;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record ClienteListarDto(Long id,
 
                                String nome,
                                Integer codigo,
-                               LocalDate  horaCriacao,
-                               LocalDate   horaFinalizando,
-                               List<Pedidos>pedidos,
-                               List<Pedidos> contaDetalhada,
+                               LocalDateTime  horaCriacao,
+                               LocalDateTime horaFinalizando,
+                               Pedidos pedidos,
+
                                Double contaTotal
 ){}
 

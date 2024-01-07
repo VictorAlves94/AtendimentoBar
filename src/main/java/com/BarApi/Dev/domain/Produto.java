@@ -19,5 +19,7 @@ private String descricao;
 private Float valor;
 private CategoriaEnum categoriaEnum;
 private Integer quantEstoque = 0;
-
+@ManyToOne
+@JoinColumn(name = "pedido_id")
+private Pedidos pedido;
 }

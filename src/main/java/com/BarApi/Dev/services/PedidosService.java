@@ -1,9 +1,11 @@
 package com.BarApi.Dev.services;
 
+import com.BarApi.Dev.domain.Conta;
 import com.BarApi.Dev.domain.Pedidos;
 import com.BarApi.Dev.dto.pedidos.PedidosCriarDto;
 import com.BarApi.Dev.dto.pedidos.PedidosListarDto;
 import com.BarApi.Dev.repository.PedidosRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +20,10 @@ import java.util.stream.Collectors;
 public class PedidosService {
     @Autowired
     private PedidosRepository repository;
+    @Autowired
+    private FuncionarioServices funcionarioServices;
+    @Autowired
+    private ContaService contaService;
 
     public PedidosListarDto buscarPedido(Long id) {
         Pedidos pedido = buscarPorId(id);
@@ -38,6 +44,12 @@ public class PedidosService {
     @Transactional
     public Pedidos cadastrarPedido(PedidosCriarDto dados) {
         Pedidos pedidoCadastro = converterDtoParaEntidade(dados);
+        var funcionario = funcionarioServices.buscarPorNome(dados.nomeGarcon());
+        var cliente = clienteServices.buscarPorCodigo(dados.codigoCliente());
+
+        pedidoCadastro.setGarcon(funcionario);
+        pedidoCadastro.setCliente(cliente);
+
         return repository.save(pedidoCadastro);
     }
 
@@ -47,8 +59,8 @@ public class PedidosService {
         Pedidos pedidoEntrada = converterDtoParaEntidade(pedidosCriarDto);
         pedidoEntrada.setId(id);
 
-        // Aqui você poderia usar um método específico para cópia ou um mapeador como ModelMapper ou MapStruct
-        // BeanUtils.copyProperties(pedidoEntrada, pedido);
+
+       BeanUtils.copyProperties(pedidoEntrada, pedido);
 
         return repository.save(pedido);
     }
@@ -77,14 +89,17 @@ public class PedidosService {
     private Pedidos converterDtoParaEntidade(PedidosCriarDto pedidoCriarDto) {
         Pedidos pedido = new Pedidos();
 
-        pedido.setId(pedidoCriarDto.id());
-        pedido.setCliente(pedidoCriarDto.cliente());
-        pedido.setGarcon(pedidoCriarDto.garcon());
-        pedido.setProdutos(pedidoCriarDto.produtos());
-        pedido.setMesa(pedidoCriarDto.mesa());
-        // Adicione outros campos conforme necessário
+        // ... outros campos ...
+
+        var conta = contaService.buscarPorId(pedidoCriarDto.contaId());
+        pedido.setConta(conta);
+
+        // Configure o pedido com os dados do DTO
+        pedido.setGarcon(funcionarioServices.buscarPorNome(pedidoCriarDto.nomeGarcon()));
+        // Outros campos conforme necessário
 
         return pedido;
+    }
     }
 
     private Pedidos buscarPorId(Long id) {

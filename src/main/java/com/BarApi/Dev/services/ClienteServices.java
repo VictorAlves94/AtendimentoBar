@@ -1,6 +1,7 @@
 package com.BarApi.Dev.services;
 
 import com.BarApi.Dev.domain.Cliente;
+import com.BarApi.Dev.domain.Pedidos;
 import com.BarApi.Dev.dto.cliente.ClienteCadastrarDto;
 import com.BarApi.Dev.dto.cliente.ClienteListarDto;
 import com.BarApi.Dev.repository.ClienteRepository;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,19 +52,21 @@ public class ClienteServices {
         clienteEntrada.setId(id);
 
         // Aqui você poderia usar um método específico para cópia ou um mapeador como ModelMapper ou MapStruct
-        // BeanUtils.copyProperties(clienteEntrada, cliente);
+        BeanUtils.copyProperties(clienteEntrada, cliente);
 
         return repository.save(cliente);
     }
 
+    @Transactional
     public void excluirCliente(Long id) {
-        var cliente = buscarPorId(id);
-        if (cliente != null){
-            repository.deleteById(id);
+        Cliente cliente = buscarPorId(id);
+        if (cliente != null) {
+            cliente.setHoraFinalizando(LocalDateTime.now());
+            repository.save(cliente);
         } else {
             throw new RuntimeException("Este Cliente Não Existe.");
         }
-        }
+    }
 
 
     private ClienteListarDto converterEntidadeParaListarDto(Cliente cliente) {
@@ -72,7 +77,6 @@ public class ClienteServices {
                 cliente.getHoraCriacao(),
                 cliente.getHoraFinalizando(),
                 cliente.getPedidos(),
-                cliente.getContaDetalhada(),
                 cliente.getContaTotal()
         );
     }
@@ -82,10 +86,7 @@ public class ClienteServices {
 
         cliente.setNome(clienteCadastrarDto.nome());
         cliente.setCodigo(clienteCadastrarDto.codigo());
-        cliente.setHoraCriacao(clienteCadastrarDto.horaCriacao());
-        cliente.setHoraFinalizando(clienteCadastrarDto.horaFinalizando());
-        cliente.setPedidos(clienteCadastrarDto.pedidos());
-        cliente.setContaDetalhada(clienteCadastrarDto.contaDetalhada());
+        cliente.setPedidos((Pedidos) clienteCadastrarDto.pedidos());
         cliente.setContaTotal(clienteCadastrarDto.contaTotal());
 
         return cliente;
@@ -93,5 +94,8 @@ public class ClienteServices {
 
     private Cliente buscarPorId(Long id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não Encontrado"));
+    }
+    public Cliente buscarPorCodigo(Integer id) {
+        return repository.findByCodigo(id).orElseThrow(() -> new RuntimeException("Cliente não Encontrado"));
     }
 }
