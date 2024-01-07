@@ -6,9 +6,10 @@ import com.BarApi.Dev.domain.Produto;
 
 import java.util.List;
 
-public record PedidosCriarDto(Long id,
+public record PedidosCriarDto(
+                              Long id,
                               Cliente cliente,
                               Funcionario garcon,
-                              List<Produto> produtos,
+                              List<Produto>produtos,
                               String mesa) {
 }

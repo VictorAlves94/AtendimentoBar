@@ -55,8 +55,14 @@ public class ClienteServices {
     }
 
     public void excluirCliente(Long id) {
-        // Implemente a lógica de exclusão ou desativação do cliente aqui
-    }
+        var cliente = buscarPorId(id);
+        if (cliente != null){
+            repository.deleteById(id);
+        } else {
+            throw new RuntimeException("Este Cliente Não Existe.");
+        }
+        }
+
 
     private ClienteListarDto converterEntidadeParaListarDto(Cliente cliente) {
         return new ClienteListarDto(
