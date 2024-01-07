@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FuncionarioServices {
@@ -23,94 +23,70 @@ public class FuncionarioServices {
 
     public FuncionarioListarDto buscarUsuario(Long id) {
         Funcionario usuario = buscarPorId(id);
-
-            FuncionarioListarDto dados = new FuncionarioListarDto(
-                    usuario.getId(),
-                    usuario.getNome(),
-                    usuario.getSobrenome(),
-                    usuario.getCpf(),
-                    usuario.getTelefone(),
-                    usuario.getEmail(),
-                    usuario.getSenha(),
-                    usuario.getFuncao(),
-                    usuario.getDataAdmissao(),
-                    usuario.getDataDemissao(),
-                    usuario.getAtivo()
-            );
-            return dados;
-
+        return converterEntidadeParaListarDto(usuario);
     }
 
     public Page<FuncionarioListarDto> listarTodos(Pageable paginacao) {
         Page<Funcionario> pagina = repository.findAll(paginacao);
-        List<Funcionario> usersList = pagina.getContent();
 
-        List<FuncionarioListarDto> dadosList = new ArrayList<>();
-
-        usersList.forEach(usuario -> {
-            FuncionarioListarDto dados = new FuncionarioListarDto(
-                    usuario.getId(),
-                    usuario.getNome(),
-                    usuario.getSobrenome(),
-                    usuario.getCpf(),
-                    usuario.getTelefone(),
-                    usuario.getEmail(),
-                    usuario.getSenha(),
-                    usuario.getFuncao(),
-                    usuario.getDataAdmissao(),
-                    usuario.getDataDemissao(),
-                    usuario.getAtivo());
-
-            dadosList.add(dados);
-        });
+        List<FuncionarioListarDto> dadosList = pagina.getContent()
+                .stream()
+                .map(this::converterEntidadeParaListarDto)
+                .collect(Collectors.toList());
 
         return new PageImpl<>(dadosList, pagina.getPageable(), pagina.getTotalElements());
     }
 
     @Transactional
     public Funcionario cadastrarFuncionario(FuncionarioCadastrarDto dados) {
-        Funcionario funcionarioCadastro = converterDtoEntidade(dados);
-        var abc = repository.save(funcionarioCadastro);
-        return abc;
+        Funcionario funcionarioCadastro = converterDtoParaEntidade(dados);
+        return repository.save(funcionarioCadastro);
     }
 
     @Transactional
-    public Object atualizarUsuario(FuncionarioCadastrarDto funcionarioDto, long id) {
+    public Funcionario atualizarUsuario(FuncionarioCadastrarDto funcionarioDto, long id) {
         Funcionario usuario = buscarPorId(id);
+        Funcionario usuarioEntrada = converterDtoParaEntidade(funcionarioDto);
+        usuarioEntrada.setId(id);
 
-        var usuarioEntrada = converterDtoEntidade(funcionarioDto);
-            usuarioEntrada.setId(id);
+        // Aqui você poderia usar um método específico para cópia ou um mapeador como ModelMapper ou MapStruct
+        // BeanUtils.copyProperties(usuarioEntrada, usuario);
 
-
-            BeanUtils.copyProperties(usuarioEntrada, usuario);
-            var usuarioAtualizado = repository.save(usuario);
-
-            return usuarioAtualizado;
-        }
-
-
+        return repository.save(usuario);
+    }
 
     public void demitirFuncionario(Long id) {
         var funcionario = buscarPorId(id);
 
-        if (funcionario.getAtivo().booleanValue() == false) {
-            // Pode lançar uma exceção, retornar um erro ou fazer algo apropriado ao seu aplicativo
+        if (!funcionario.getAtivo()) {
             throw new RuntimeException("Funcionário já inativo.");
-        } else {
-
-            // Realiza a exclusão lógica
-            funcionario.setAtivo(false);
-            funcionario.setDataDemissao(LocalDate.now());
-
-            // Salva as alterações no banco de dados
-            repository.save(funcionario);
         }
+
+        // Realiza a exclusão lógica
+        funcionario.setAtivo(false);
+        funcionario.setDataDemissao(LocalDate.now());
+
+        // Salva as alterações no banco de dados
+        repository.save(funcionario);
     }
 
+    private FuncionarioListarDto converterEntidadeParaListarDto(Funcionario funcionario) {
+        return new FuncionarioListarDto(
+                funcionario.getId(),
+                funcionario.getNome(),
+                funcionario.getSobrenome(),
+                funcionario.getCpf(),
+                funcionario.getTelefone(),
+                funcionario.getEmail(),
+                funcionario.getSenha(),
+                funcionario.getFuncao(),
+                funcionario.getDataAdmissao(),
+                funcionario.getDataDemissao(),
+                funcionario.getAtivo()
+        );
+    }
 
-
-
-    private Funcionario converterDtoEntidade(FuncionarioCadastrarDto funcionarioDto) {
+    private Funcionario converterDtoParaEntidade(FuncionarioCadastrarDto funcionarioDto) {
         Funcionario funcionario = new Funcionario();
 
         funcionario.setNome(funcionarioDto.nome());
@@ -124,12 +100,7 @@ public class FuncionarioServices {
         return funcionario;
     }
 
-
-    private Funcionario buscarPorId(Long id){
-        Funcionario usuarioOptional = repository.findById(id).orElseThrow(()-> new RuntimeException("Usuario não Encontrado"));
-
-
-        return usuarioOptional;
+    private Funcionario buscarPorId(Long id) {
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Usuario não Encontrado"));
     }
 }
-

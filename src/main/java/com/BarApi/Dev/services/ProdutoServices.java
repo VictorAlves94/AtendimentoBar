@@ -4,7 +4,6 @@ import com.BarApi.Dev.domain.Produto;
 import com.BarApi.Dev.dto.produto.ProdutoCriarDto;
 import com.BarApi.Dev.dto.produto.ProdutoListarDto;
 import com.BarApi.Dev.repository.ProdutoRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,8 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdutoServices {
@@ -22,72 +21,59 @@ public class ProdutoServices {
 
     public ProdutoListarDto buscarProduto(Long id) {
         Produto produto = buscarPorId(id);
-
-        ProdutoListarDto dados = new ProdutoListarDto(
-                    produto.getId(),
-                    produto.getNome(),
-                    produto.getDescricao(),
-                    produto.getValor(),
-                    produto.getCategoriaEnum(),
-                    produto.getQuantEstoque()
-
-            );
-            return dados;
-
+        return converterEntidadeParaListarDto(produto);
     }
 
     public Page<ProdutoListarDto> listarTodos(Pageable paginacao) {
         Page<Produto> pagina = repository.findAll(paginacao);
-        List<Produto> usersList = pagina.getContent();
-
-        List<ProdutoListarDto> dadosList = new ArrayList<>();
-
-        usersList.forEach(produto -> {
-            ProdutoListarDto dados = new ProdutoListarDto(
-                    produto.getId(),
-                    produto.getNome(),
-                    produto.getDescricao(),
-                    produto.getValor(),
-                    produto.getCategoriaEnum(),
-                    produto.getQuantEstoque());
-
-            dadosList.add(dados);
-        });
+        List<ProdutoListarDto> dadosList = pagina.getContent()
+                .stream()
+                .map(this::converterEntidadeParaListarDto)
+                .collect(Collectors.toList());
 
         return new PageImpl<>(dadosList, pagina.getPageable(), pagina.getTotalElements());
     }
 
     @Transactional
     public Produto cadastrarProdutos(ProdutoCriarDto dados) {
-        Produto produtoCadastro = converterDtoEntidade(dados);
-        var produtoSalvo = repository.save(produtoCadastro);
-        return produtoSalvo;
+        Produto produtoCadastro = converterDtoParaEntidade(dados);
+        return repository.save(produtoCadastro);
     }
 
     @Transactional
-    public Object atualizarUsuario(ProdutoCriarDto produtoCriarDto, long id) {
+    public Produto atualizarProduto(ProdutoCriarDto produtoCriarDto, long id) {
         Produto produto = buscarPorId(id);
+        Produto produtoEntrada = converterDtoParaEntidade(produtoCriarDto);
+        produtoEntrada.setId(id);
 
-        var produtoEntrada = converterDtoEntidade(produtoCriarDto);
-            produtoEntrada.setId(id);
+        // Aqui você poderia usar um método específico para cópia ou um mapeador como ModelMapper ou MapStruct
+        // BeanUtils.copyProperties(produtoEntrada, produto);
 
-
-            BeanUtils.copyProperties(produtoEntrada, produto);
-            var produtoAtualizado = repository.save(produto);
-
-            return produtoAtualizado;
-        }
+        return repository.save(produto);
+    }
 
     public void deletarProduto(Long id) {
         var produto = buscarProduto(id);
 
         if (produto != null){
             repository.deleteById(id);
+        } else {
+            throw new RuntimeException("Este Produto Não Existe.");
         }
-        throw new RuntimeException("Este Produto Não Existe.");
     }
 
-    private Produto converterDtoEntidade(ProdutoCriarDto produtoCriarDto) {
+    private ProdutoListarDto converterEntidadeParaListarDto(Produto produto) {
+        return new ProdutoListarDto(
+                produto.getId(),
+                produto.getNome(),
+                produto.getDescricao(),
+                produto.getValor(),
+                produto.getCategoriaEnum(),
+                produto.getQuantEstoque()
+        );
+    }
+
+    private Produto converterDtoParaEntidade(ProdutoCriarDto produtoCriarDto) {
         Produto produto = new Produto();
 
         produto.setNome(produtoCriarDto.nome());
@@ -96,16 +82,10 @@ public class ProdutoServices {
         produto.setCategoriaEnum(produtoCriarDto.categoriaEnum());
         produto.setQuantEstoque(produtoCriarDto.quantEstoque());
 
-
         return produto;
     }
 
-
     private Produto buscarPorId(Long id){
-        Produto produtoOptional = repository.findById(id).orElseThrow(()-> new RuntimeException("Produto não Encontrado"));
-
-
-        return produtoOptional;
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Produto não Encontrado"));
     }
 }
-
