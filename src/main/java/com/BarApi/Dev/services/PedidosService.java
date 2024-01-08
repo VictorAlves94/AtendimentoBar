@@ -4,6 +4,7 @@ import com.BarApi.Dev.domain.Conta;
 import com.BarApi.Dev.domain.Pedidos;
 import com.BarApi.Dev.dto.pedidos.PedidosCriarDto;
 import com.BarApi.Dev.dto.pedidos.PedidosListarDto;
+import com.BarApi.Dev.repository.ContaRepository;
 import com.BarApi.Dev.repository.PedidosRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,8 @@ public class PedidosService {
     private FuncionarioServices funcionarioServices;
     @Autowired
     private ContaService contaService;
+
+
 
     public PedidosListarDto buscarPedido(Long id) {
         Pedidos pedido = buscarPorId(id);
@@ -41,14 +45,15 @@ public class PedidosService {
         return new PageImpl<>(dadosList, pagina.getPageable(), pagina.getTotalElements());
     }
 
-    @Transactional
     public Pedidos cadastrarPedido(PedidosCriarDto dados) {
         Pedidos pedidoCadastro = converterDtoParaEntidade(dados);
         var funcionario = funcionarioServices.buscarPorNome(dados.nomeGarcon());
-        var cliente = clienteServices.buscarPorCodigo(dados.codigoCliente());
 
         pedidoCadastro.setGarcon(funcionario);
-        pedidoCadastro.setCliente(cliente);
+
+        // Obtenha ou crie a conta associada ao cliente
+        Conta contaCliente = contaService
+        pedidoCadastro.setConta(contaCliente);
 
         return repository.save(pedidoCadastro);
     }
@@ -59,8 +64,11 @@ public class PedidosService {
         Pedidos pedidoEntrada = converterDtoParaEntidade(pedidosCriarDto);
         pedidoEntrada.setId(id);
 
+        // Atualizar o valor total na conta associada
+        BigDecimal valorTotalPedido = pedidoEntrada.calcularValorTotal();
+        contaService.atualizarValorTotal(pedido.getConta().getId(), valorTotalPedido);
 
-       BeanUtils.copyProperties(pedidoEntrada, pedido);
+        BeanUtils.copyProperties(pedidoEntrada, pedido);
 
         return repository.save(pedido);
     }
@@ -78,10 +86,10 @@ public class PedidosService {
     private PedidosListarDto converterEntidadeParaListarDto(Pedidos pedido) {
         return new PedidosListarDto(
                 pedido.getId(),
-                pedido.getCliente(),
                 pedido.getGarcon(),
                 pedido.getProdutos(),
-                pedido.getMesa()
+                pedido.getMesa(),
+                pedido.getConta()
                 // Adicione outros campos conforme necessário
         );
     }
@@ -100,9 +108,11 @@ public class PedidosService {
 
         return pedido;
     }
-    }
+
 
     private Pedidos buscarPorId(Long id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não Encontrado"));
     }
+
+
 }

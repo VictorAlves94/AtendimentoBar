@@ -1,5 +1,6 @@
 package com.BarApi.Dev.dto.cliente;
 
+import com.BarApi.Dev.domain.Conta;
 import com.BarApi.Dev.domain.Pedidos;
 import com.BarApi.Dev.enuns.Funcao;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -14,8 +15,6 @@ public record ClienteListarDto(Long id,
                                Integer codigo,
                                LocalDateTime  horaCriacao,
                                LocalDateTime horaFinalizando,
-                               Pedidos pedidos,
-
-                               Double contaTotal
+                                Conta conta
 ){}
 

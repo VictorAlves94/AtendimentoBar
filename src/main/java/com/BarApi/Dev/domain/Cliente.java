@@ -20,10 +20,9 @@ public class Cliente {
     private Long id;
     private String nome;
     private Integer codigo;
-    private LocalDateTime horaCriacao = LocalDateTime.now();
-    private LocalDateTime horaFinalizando = null;
     @OneToOne(mappedBy = "cliente")
     private Conta conta;
-    private Double contaTotal;
-
+    private LocalDateTime horaCriacao = LocalDateTime.now();
+    private LocalDateTime horaFinalizando = null;
+    private boolean ativo = true;
 }

@@ -76,8 +76,8 @@ public class ClienteServices {
                 cliente.getCodigo(),
                 cliente.getHoraCriacao(),
                 cliente.getHoraFinalizando(),
-                cliente.getPedidos(),
-                cliente.getContaTotal()
+                cliente.getConta()
+
         );
     }
 
@@ -86,8 +86,8 @@ public class ClienteServices {
 
         cliente.setNome(clienteCadastrarDto.nome());
         cliente.setCodigo(clienteCadastrarDto.codigo());
-        cliente.setPedidos((Pedidos) clienteCadastrarDto.pedidos());
-        cliente.setContaTotal(clienteCadastrarDto.contaTotal());
+        cliente.setConta(clienteCadastrarDto.conta());
+        cliente.setAtivo(true);
 
         return cliente;
     }

@@ -4,6 +4,8 @@ import com.BarApi.Dev.enuns.CategoriaEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -16,10 +18,12 @@ public class Produto {
 private Long id;
 private String nome;
 private String descricao;
-private Float valor;
+private BigDecimal valor;
 private CategoriaEnum categoriaEnum;
 private Integer quantEstoque = 0;
 @ManyToOne
 @JoinColumn(name = "pedido_id")
 private Pedidos pedido;
+
+
 }

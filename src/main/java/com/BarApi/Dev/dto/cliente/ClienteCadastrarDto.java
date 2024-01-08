@@ -1,5 +1,6 @@
 package com.BarApi.Dev.dto.cliente;
 
+import com.BarApi.Dev.domain.Conta;
 import com.BarApi.Dev.domain.Pedidos;
 import com.BarApi.Dev.enuns.Funcao;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -13,9 +14,9 @@ public record ClienteCadastrarDto(
         String nome,
         @NotNull
         Integer codigo,
-        Pedidos pedidos,
-        List<Pedidos> contaDetalhada,
-        Double contaTotal
+        Conta conta
+
+
         ){
 
 }
